@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.YuvImage;
 import android.media.Image;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.ImageProxy;
@@ -28,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +39,7 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
 
     private String assetModelName;
     private String assetLabelName;
-    private boolean isQuant = true;
+    private boolean isQuant = false;
 
     private final Interpreter.Options tfLiteOptions = new Interpreter.Options();
     private Interpreter tfLite;
@@ -62,7 +64,7 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
     private float[] numDetections;
 
     //depends on size model
-    private int DIM_IMG_SIZE = 300;
+    private int DIM_IMG_SIZE = 320;
     private int DIM_PIXEL_SIZE = 3;
 
     private float IMAGE_MEAN = 128.0f;
@@ -85,39 +87,65 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
     public List<String> getDetectLabel() {return detectLabel;}
     public List<Float> getDetectConfidence() {return detectConfidence;}
 
+
+
+
     public void analyzeImage(ImageProxy imageProxy) {
+
+        if(imageProxy==null){
+            Log.d("img proxy", "Walang laman awit naman to");
+        }else{
+            Log.d("img proxy", "MERONN");
+        }
 
         if (isQuant) {
             assetModelName = "coco_ssd_mobilenet_v1_1.0_quant.tflite";
             assetLabelName = "coco_ssd_mobilenet_v1_1.0_quant.txt";
             imgData = ByteBuffer.allocateDirect(DIM_IMG_SIZE * DIM_IMG_SIZE * DIM_PIXEL_SIZE);
+
+            String s = StandardCharsets.UTF_8.decode(imgData).toString();
+            Log.d("BYTE BUFFER", s);
         } else {
             //insert name of float model if you want to use it
-            assetModelName = "";
-            assetLabelName = "";
-            imgData = ByteBuffer.allocateDirect(4 * DIM_IMG_SIZE * DIM_IMG_SIZE * DIM_PIXEL_SIZE);
+            assetModelName = "Dog_Detector_metadata.tflite";
+            assetLabelName = "Dog_Detector_metadata.txt";
+            imgData = ByteBuffer.allocateDirect(1 * DIM_IMG_SIZE * DIM_IMG_SIZE * DIM_PIXEL_SIZE);
+
+
         }
 
+
+
         imgData.order(ByteOrder.nativeOrder());
+
         intValues = new int[DIM_IMG_SIZE * DIM_IMG_SIZE];
 
         try {
             tfLite = new Interpreter(loadModelFile(), tfLiteOptions);
             labelList = loadLabelList();
+            Log.d("TFLITE:", "LOAD LABEL AND TFLITE");
+
         } catch (Exception ex) {
+            Log.d("TFLITE:", "CANNOT LOAD LABEL AND TFLITE ERROR OCCURED");
             ex.printStackTrace();
+
         }
 
         @SuppressLint("UnsafeExperimentalUsageError")
+
+
         Bitmap bitmap_orig = toBitmap(imageProxy.getImage());
         Bitmap bitmap = getResizedBitmap(bitmap_orig, DIM_IMG_SIZE, DIM_IMG_SIZE);
         convertBitmapToByteBuffer(bitmap);
+
+        Log.d("BITMAP ", "BITMAP PART NA");
 
         outputLocations = new float[1][NUM_DETECTIONS][4];
         outputClasses = new float[1][NUM_DETECTIONS];
         outputScores = new float[1][NUM_DETECTIONS];
         numDetections = new float[1];
 
+        Log.d("ALLOCATING ARRAY ", "EWAN KO NA");
         Object[] inputArray = {imgData};
         Map<Integer, Object> outputMap = new HashMap<>();
         outputMap.put(0, outputLocations);
@@ -126,13 +154,17 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
         outputMap.put(3, numDetections);
 
         // run tfLite
+        Log.d("TFLITE ", "RUNNING..");
         tfLite.runForMultipleInputsOutputs(inputArray, outputMap);
 
+        Log.d("FUNCTION ENTERING ", "Starting..");
         readOutput();
     }
 
     private void readOutput() {
+        Log.d("ReadOutput Function", "READ OUTPUT NA");
         int numDetectionsOutput = Math.min(NUM_DETECTIONS, (int) numDetections[0]); // cast from float to integer, use min for safety
+
 
         final ArrayList<Detection.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
         for (int i = 0; i < numDetectionsOutput; ++i) {
@@ -154,6 +186,9 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
                             detection));
         }
 
+
+
+
         detectLocation.clear();
         detectLabel.clear();
         detectConfidence.clear();
@@ -165,6 +200,12 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
                 detectLabel.add(result.getTitle());
                 detectConfidence.add(result.getConfidence());
             }
+        }
+
+        if(recognitions.isEmpty()){
+            Log.d("RECOGNITION", "WALANG NA RECOGNIZE");
+        }else{
+            Log.d("RECOGNITION", "MERONG NA RECOGNIZE");
         }
     }
 
@@ -246,6 +287,13 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
         FileChannel fileChannel = inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
         long declaredLength = fileDescriptor.getDeclaredLength();
+
+        String s = Long.toString(startOffset);
+        String d = Long.toString(declaredLength);
+
+        Log.d("STARTOFFSET", s);
+        Log.d("DECLAREDLENGTH", d);
+
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
     private List<String> loadLabelList() throws IOException {
@@ -258,6 +306,11 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
             labelList.add(line);
         }
         reader.close();
+
+
+        if(!labelList.isEmpty()){
+            Log.d("Meron",labelList.get(0));
+        }
         return labelList;
     }
 }
