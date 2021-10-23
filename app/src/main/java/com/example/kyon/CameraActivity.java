@@ -71,7 +71,7 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 //        //hide action und status bar, transparent navigation bar
 //        getSupportActionBar().hide();
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
