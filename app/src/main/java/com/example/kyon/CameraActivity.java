@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.media.MediaScannerConnection;
@@ -54,6 +55,7 @@ public class CameraActivity extends AppCompatActivity {
     private SeekBar mZoomSlider;
     private TextView mZoomTextView;
     private ToggleButton mSwitchCameraButton;
+    private Button mCloseButton;
 
     //variables to store config states
     private String mPhotoPath;
@@ -82,6 +84,7 @@ public class CameraActivity extends AppCompatActivity {
         mZoomSlider = findViewById(R.id.zoomSliderSeekBar);
         mSwitchCameraButton = findViewById(R.id.switchCameraButton);
         mZoomTextView = findViewById(R.id.zoomTextView);
+        mCloseButton = findViewById(R.id.btn_close);
 
         //initiate zoom level otherwise is not in the foreground -> bug?
         mZoomTextView.setText(mZoomState + "x");
@@ -96,6 +99,12 @@ public class CameraActivity extends AppCompatActivity {
         // Setup the listener for take photos and switch camera
         mTakePictureButton.setOnClickListener(view -> takePhoto());
         mSwitchCameraButton.setOnClickListener(view -> switchCamera());
+        mCloseButton.setOnClickListener(view -> closeCamera());
+    }
+
+    private void closeCamera() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     //save value if screen orientation change and activity restarts

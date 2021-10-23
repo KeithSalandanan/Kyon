@@ -7,10 +7,23 @@
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_close"
+            android:text="x"
+            android:textSize="@dimen/_11ssp"
+            android:textColor="@color/white"
+            android:padding="@dimen/_2ssp"
+            android:background="@drawable/round_buttons"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginRight="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_25sdp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
 
         <androidx.camera.view.PreviewView
             android:id="@+id/viewFinder"
@@ -41,17 +54,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/takePictureButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginBottom="54dp"
+            android:layout_marginBottom="115dp"
             android:background="@drawable/selector_capture"
             android:elevation="2dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
+
 
         <ToggleButton
             android:id="@+id/switchCameraButton"
@@ -69,7 +83,7 @@
             android:id="@+id/zoomSliderSeekBar"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="150dp"
+            android:layout_marginBottom="200dp"
             android:max="4"
             android:progress="0"
             android:progressTint="#FFFFFF"
@@ -77,6 +91,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/SignalText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_55sdp"
+            android:padding="@dimen/_3sdp"
+            android:background="@color/primary_text_yellow"
+            android:text="@string/take_photo"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/viewFinder" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

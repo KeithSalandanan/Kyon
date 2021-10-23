@@ -3,8 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/circle_buttons.xml" value="0.21979166666666666" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/ic_back_camera.xml" value="0.2703125" />
-        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_camera.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/selector_camera.xml" value="0.1796875" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/selector_capture.xml" value="0.1796875" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/shape_button_pressed.xml" value="0.1796875" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/shape_button_unpressed.xml" value="0.1796875" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/shape_seekbar_thumb.xml" value="0.1796875" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_camera.xml" value="0.264" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
       </map>
     </option>
