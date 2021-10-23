@@ -10,7 +10,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+
+import soup.neumorphism.NeumorphCardView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,9 +23,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
         setContentView(R.layout.activity_main);
 
-        Button enableCamera = findViewById(R.id.enableCamera);
+        NeumorphCardView enableCamera = findViewById(R.id.cardPunch);
         enableCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -39,7 +39,7 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
 
     private String assetModelName;
     private String assetLabelName;
-    private boolean isQuant = false;
+    private boolean isQuant = true;
 
     private final Interpreter.Options tfLiteOptions = new Interpreter.Options();
     private Interpreter tfLite;
@@ -64,7 +64,7 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
     private float[] numDetections;
 
     //depends on size model
-    private int DIM_IMG_SIZE = 320;
+    private int DIM_IMG_SIZE = 300;
     private int DIM_PIXEL_SIZE = 3;
 
     private float IMAGE_MEAN = 128.0f;
@@ -103,8 +103,6 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
             assetLabelName = "coco_ssd_mobilenet_v1_1.0_quant.txt";
             imgData = ByteBuffer.allocateDirect(DIM_IMG_SIZE * DIM_IMG_SIZE * DIM_PIXEL_SIZE);
 
-            String s = StandardCharsets.UTF_8.decode(imgData).toString();
-            Log.d("BYTE BUFFER", s);
         } else {
             //insert name of float model if you want to use it
             assetModelName = "Dog_Detector_metadata.tflite";

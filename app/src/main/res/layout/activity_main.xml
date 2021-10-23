@@ -4,23 +4,254 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/enableCamera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enable Camera"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="505dp" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginTop="@dimen/_25sdp"
+                android:layout_marginEnd="@dimen/_24sdp"
+                android:text="Kyon"
+                android:textColor="@color/primary_text_yellow"
+                android:textSize="@dimen/_28sdp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <TextView
+                android:id="@+id/textDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginEnd="@dimen/_24sdp"
+                android:text="Scan, classify and generate"
+                android:textColor="@color/primary_text_yellow"
+                android:textSize="@dimen/_13ssp"
+                app:layout_constraintTop_toBottomOf="@id/textTitle"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/FlowTop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="@dimen/_24sdp"
+                app:constraint_referenced_ids="cardPunch"
+                app:flow_horizontalGap="@dimen/_3sdp"
+                app:flow_maxElementsWrap="2"
+                app:flow_verticalGap="@dimen/_3sdp"
+                app:flow_wrapMode="aligned"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textDesc"/>
+
+            <soup.neumorphism.NeumorphCardView
+                android:id="@+id/cardPunch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                app:neumorph_backgroundColor="@color/background"
+                app:neumorph_shadowColorLight="@color/background"
+                app:neumorph_shadowColorDark="@color/background"
+                app:neumorph_shadowElevation="@dimen/_3sdp"
+                app:neumorph_shapeAppearance="@style/NeumorphismCard"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textDesc">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:orientation="vertical"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="@dimen/_15sdp"
+                    android:paddingBottom="@dimen/_15sdp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginRight="@dimen/_100sdp"
+                        android:background="@drawable/rounded_labels_left"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_25sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+
+                        android:text="Classify Dog Breed"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_15sdp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/_130sdp"
+                            android:layout_height="@dimen/_85sdp"
+                            android:layout_marginTop="@dimen/_4sdp"
+                            android:text="Scan and Identify your dog's breed."
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/_16ssp"/>
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_80sdp"
+                            android:layout_marginStart="@dimen/_14sdp"
+                            app:tint="@color/primary"
+                            android:background="@drawable/classify_img"
+                            />
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+
+
+            </soup.neumorphism.NeumorphCardView>
+
+
+
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/FlowBottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:constraint_referenced_ids="cardSetting"
+                app:flow_horizontalGap="@dimen/_3sdp"
+                app:flow_maxElementsWrap="2"
+                app:flow_verticalGap="@dimen/_3sdp"
+                app:flow_wrapMode="aligned"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FlowTop"/>
+
+            <soup.neumorphism.NeumorphCardView
+                android:id="@+id/cardSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:neumorph_backgroundColor="@color/background"
+                app:neumorph_shadowColorLight="@color/background"
+                app:neumorph_shadowColorDark="@color/background"
+                app:neumorph_shadowElevation="@dimen/_4sdp"
+                app:neumorph_shapeAppearance="@style/NeumorphismCard"
+                tools:ignore = "MissingConstraints">
+
+                <LinearLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/_15sdp"
+                    android:paddingRight="0dp"
+                    android:paddingBottom="@dimen/_15sdp">
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:paddingLeft="@dimen/_25sdp"
+                        android:layout_marginLeft="@dimen/_100sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:text="Generate Offspring"
+                        android:background="@drawable/rounded_labels_right"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_14ssp"
+                        android:textStyle="bold"/>
+
+                    <LinearLayout
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_15sdp"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="@dimen/_150sdp"
+                            android:layout_height="@dimen/_100sdp"
+                            app:tint="@color/primary"
+                            android:background="@drawable/offspring_img"
+                            />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_85sdp"
+                            android:layout_marginTop="@dimen/_4sdp"
+                            android:text="See what your dog's possible offspring will look like."
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/_16ssp"/>
+
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </soup.neumorphism.NeumorphCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="65dp"
+            app:cardCornerRadius="18dp"
+            app:layout_constraintBottom_toBottomOf="@+id/root"
+            >
+
+
+            <com.google.android.material.tabs.TabLayout
+                style="@style/Widget.App.TabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/home" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/about" />
+
+
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/settings"/>
+            </com.google.android.material.tabs.TabLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

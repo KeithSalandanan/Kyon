@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Kyon" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Kyon" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -12,5 +12,39 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+    </style>
+
+    <!--Custom Style-->
+    <style name="Fullscreen" parent="Theme.Kyon">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+    </style>
+
+    <style name="NeumorphismImage">
+        <item name= "neumorph_cornerFamily">rounded</item>
+        <item name="neumorph_cornerSize">@dimen/_4sdp</item>
+    </style>
+    <style name="NeumorphismCard">
+        <item name= "neumorph_cornerFamily">rounded</item>
+        <item name="neumorph_cornerSize">@dimen/_10sdp</item>
+    </style>
+
+    <style name="NeumorphismButton">
+        <item name= "neumorph_cornerFamily">rounded</item>
+        <item name="neumorph_cornerSize">@dimen/_10sdp</item>
+    </style>
+
+    <!--Navbar-->
+
+    <style name="Widget.App.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
+    </style>
+
+    <style name="ThemeOverlay.App.TabLayout" parent="">
+        <item name="colorPrimary">@color/btn_label_blue</item>
+        <item name="colorSurface">@color/Medium_white</item>
+        <item name="colorOnSurface">@color/btn_gray</item>
     </style>
 </resources>
