@@ -27,15 +27,26 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        NeumorphCardView enableCamera = findViewById(R.id.cardPunch);
-        enableCamera.setOnClickListener(new View.OnClickListener() {
+        NeumorphCardView cardClassify= findViewById(R.id.cardClassifyDog);
+        NeumorphCardView cardGenerate= findViewById(R.id.cardGenerateOffspring);
+
+
+
+        cardClassify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (hasCameraPermission()) {
-                    enableCamera();
+                    startClassify();
                 } else {
                     requestPermission();
                 }
+            }
+        });
+
+        cardGenerate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startGenerate();
             }
         });
     }
@@ -55,8 +66,13 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private void enableCamera() {
+    private void startClassify() {
         Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
+    }
+
+    private void startGenerate() {
+        Intent intent = new Intent(this, GenOffspringActivity.class);
         startActivity(intent);
     }
 

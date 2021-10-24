@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_offspring"
+    tools:context=".GenOffspringActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/header_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_24sdp"
+                android:text="Kyon"
+                android:textColor="@color/primary_text_yellow"
+                android:textSize="@dimen/_28sdp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <TextView
+                android:id="@+id/textDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginEnd="@dimen/_24sdp"
+                android:text="Scan, classify and generate"
+                android:textColor="@color/primary_text_yellow"
+                android:textSize="@dimen/_13ssp"
+                app:layout_constraintTop_toBottomOf="@id/textTitle"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <TextView
+                android:id="@+id/titleOffpsring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginEnd="@dimen/_24sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginBottom="@dimen/_20sdp"
+
+                android:text="Offpsring Generator"
+                android:textColor="@color/Medium_white"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textDesc"
+                tools:layout_editor_absoluteX="0dp"/>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/imageSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_20sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header_title">
+
+
+            <!---Select Image Section-->
+            <LinearLayout
+
+                android:background="@drawable/rounded_section_yellow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/_25sdp"
+                android:paddingRight="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_15sdp"
+                android:paddingTop="@dimen/_8sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/imageSection">
+
+
+                <ImageView
+                    android:background="@drawable/rounded_btn_imgselector"
+                    android:src="@drawable/placeholder_img"
+                    android:id="@+id/selectImg1"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginRight="@dimen/_10sdp"
+                    />
+
+                <TextView
+                    android:textAlignment="center"
+                    android:text="+"
+                    android:textSize="32dp"
+                    android:textColor="@color/white"
+                    android:src="@drawable/placeholder_img"
+                    android:id="@+id/plus"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+
+                <ImageView
+                    android:background="@drawable/rounded_btn_imgselector"
+                    android:src="@drawable/placeholder_img"
+                    android:id="@+id/selectImg2"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    />
+
+            </LinearLayout>
+            <!---End of Select Image Section-->
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/equals"
+            android:textAlignment="center"
+            android:text="="
+            android:textSize="@dimen/_40sdp"
+            android:textColor="@color/Medium_white"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/btnGenerate"
+            app:layout_constraintEnd_toStartOf="@id/btnGenerate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnGenerate"
+            />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGenerate"
+            android:background="@drawable/circle_buttons_blue"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginBottom="180dp"
+            android:padding="@dimen/_10sdp"
+
+            android:text="Generate\n Offspring"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageSection"
+            app:layout_constraintBottom_toBottomOf="@+id/root"
+            />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

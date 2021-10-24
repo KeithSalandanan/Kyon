@@ -50,7 +50,7 @@
                 android:layout_marginStart="@dimen/_24sdp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="@dimen/_24sdp"
-                app:constraint_referenced_ids="cardPunch"
+                app:constraint_referenced_ids="cardClassifyDog"
                 app:flow_horizontalGap="@dimen/_3sdp"
                 app:flow_maxElementsWrap="2"
                 app:flow_verticalGap="@dimen/_3sdp"
@@ -60,7 +60,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textDesc"/>
 
             <soup.neumorphism.NeumorphCardView
-                android:id="@+id/cardPunch"
+                android:id="@+id/cardClassifyDog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
@@ -139,7 +139,7 @@
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="@dimen/_8sdp"
-                app:constraint_referenced_ids="cardSetting"
+                app:constraint_referenced_ids="cardGenerateOffspring"
                 app:flow_horizontalGap="@dimen/_3sdp"
                 app:flow_maxElementsWrap="2"
                 app:flow_verticalGap="@dimen/_3sdp"
@@ -149,7 +149,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/FlowTop"/>
 
             <soup.neumorphism.NeumorphCardView
-                android:id="@+id/cardSetting"
+                android:id="@+id/cardGenerateOffspring"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:neumorph_backgroundColor="@color/background"

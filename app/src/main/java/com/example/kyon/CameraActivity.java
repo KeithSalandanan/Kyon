@@ -26,6 +26,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.View;
@@ -57,6 +58,7 @@ public class CameraActivity extends AppCompatActivity {
     private TextView mZoomTextView;
     private ToggleButton mSwitchCameraButton;
     private Button mCloseButton;
+    private Button mGalleryButton;
 
     //variables to store config states
     private String mPhotoPath;
@@ -87,6 +89,7 @@ public class CameraActivity extends AppCompatActivity {
         mSwitchCameraButton = findViewById(R.id.switchCameraButton);
         mZoomTextView = findViewById(R.id.zoomTextView);
         mCloseButton = findViewById(R.id.btn_close);
+        mGalleryButton = findViewById(R.id.openGalleryButton);
 
         //initiate zoom level otherwise is not in the foreground -> bug?
         mZoomTextView.setText(mZoomState + "x");
@@ -102,6 +105,7 @@ public class CameraActivity extends AppCompatActivity {
         mTakePictureButton.setOnClickListener(view -> takePhoto());
         mSwitchCameraButton.setOnClickListener(view -> switchCamera());
         mCloseButton.setOnClickListener(view -> closeCamera());
+        mGalleryButton.setOnClickListener(view -> openGallery());
     }
 
     private void closeCamera() {
@@ -247,6 +251,26 @@ public class CameraActivity extends AppCompatActivity {
             });
         }
     }
+
+    //Opens Gallery
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent,3);
+    }
+
+    @Override
+    protected  void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,requestCode,data);
+        if(resultCode == RESULT_OK && data!=null){
+            Uri selectImage = data.getData();
+
+            Intent intent = new Intent(this, ClassificationActivity.class);
+            intent.putExtra("imagePath", selectImage.toString());
+            startActivity(intent);
+
+        }
+    }
+
 
     //switch between front and back camera
     private void switchCamera() {

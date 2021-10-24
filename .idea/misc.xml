@@ -3,10 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable-v24/blank_pictureframe.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable-v24/round_buttons_blue.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/background_offspring.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/background_offspring_results.xml" value="0.2703125" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/blank_pictureframe.xml" value="0.19479166666666667" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/circle_buttons.xml" value="0.21979166666666666" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/frame_result.xml" value="0.20885416666666667" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/ic_back_camera.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/round_buttons.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/rounded_blue_btn.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/rounded_btn_imgselector.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/rounded_grey_btn.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/rounded_labels_left.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/rounded_labels_right.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/rounded_labels_title.xml" value="0.2703125" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/rounded_section_yellow.xml" value="0.2703125" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/selector_camera.xml" value="0.1796875" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/selector_capture.xml" value="0.1796875" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/shape_button_pressed.xml" value="0.1796875" />
@@ -14,6 +26,8 @@
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/drawable/shape_seekbar_thumb.xml" value="0.1796875" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_camera.xml" value="0.264" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_classification.xml" value="0.23645833333333333" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_gen_offspring.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_gen_offspring_results.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects/Thesis/Kyon/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
       </map>
     </option>

@@ -16,7 +16,7 @@
             android:textSize="@dimen/_11ssp"
             android:textColor="@color/white"
             android:padding="@dimen/_2ssp"
-            android:background="@drawable/round_buttons"
+            android:background="@drawable/circle_yellow_buttons"
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginRight="@dimen/_15sdp"
@@ -74,6 +74,18 @@
             android:background="@drawable/selector_camera"
             android:textOff=""
             android:textOn=""
+            app:layout_constraintBottom_toBottomOf="@+id/takePictureButton"
+            app:layout_constraintEnd_toStartOf="@id/takePictureButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/takePictureButton" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/openGalleryButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/ic_gallery"
+            android:elevation="2dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/takePictureButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/takePictureButton"

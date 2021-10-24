@@ -66,4 +66,7 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite:+'
     //crop square image
     implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
+
+    //Circular ImageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

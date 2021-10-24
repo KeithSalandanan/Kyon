@@ -14,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Kyon">
         <activity
+            android:name=".GenOffspringResults"
+            android:exported="false" />
+        <activity
+            android:name=".GenOffspringActivity"
+            android:exported="false" />
+        <activity
             android:name=".ClassificationActivity"
             android:exported="false" />
         <activity
