@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Size;
@@ -61,6 +62,7 @@ public class CameraActivity extends AppCompatActivity {
     private String mPhotoPath;
     private int mSwitchCameraState = CameraSelector.LENS_FACING_BACK;
     private float mZoomState = 0.0f;
+    private Uri mUri;
 
     //Camera variable for image capture
     private ImageCapture mImageCapture;
@@ -216,6 +218,7 @@ public class CameraActivity extends AppCompatActivity {
             ImageCapture.OutputFileOptions.Builder outputFileOptionsBuilder =
                     new ImageCapture.OutputFileOptions.Builder(file);
 
+            Intent intent = new Intent(this, ClassificationActivity.class);
             mImageCapture.takePicture(outputFileOptionsBuilder.build(), Runnable::run, new ImageCapture.OnImageSavedCallback() {
                 @Override
                 public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
@@ -225,9 +228,15 @@ public class CameraActivity extends AppCompatActivity {
                             new String[]{file.toString()}, null,
                             (path, uri) -> {
                                 mPhotoPath = path;
+                                mUri = uri;
+
+                                runOnUiThread(() -> intent.putExtra("imagePath", mUri.toString()));
+
 
                                 runOnUiThread(() -> Toast.makeText(CameraActivity.this, "Picture saved: " + mPhotoPath,
                                         Toast.LENGTH_LONG).show());
+
+                                runOnUiThread(() -> startActivity(intent));
                             });
                 }
                 @Override
