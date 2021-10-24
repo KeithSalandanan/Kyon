@@ -21,6 +21,10 @@ import androidx.lifecycle.LifecycleOwner;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -32,6 +36,7 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +44,11 @@ import android.widget.ToggleButton;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.tensorflow.lite.support.image.TensorImage;
+import org.tensorflow.lite.task.vision.detector.ObjectDetector;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -68,9 +77,20 @@ public class CameraActivity extends AppCompatActivity {
 
     //Camera variable for image capture
     private ImageCapture mImageCapture;
+    private Uri selectImage;
 
     //number of shown detected objects
     private int NUMBER_DETECTED_OBJECTS = 1;
+
+
+    ObjectDetector.ObjectDetectorOptions options = ObjectDetector.ObjectDetectorOptions.builder()
+            .setMaxResults(1)
+            .setScoreThreshold(0.5f)
+            .build();
+
+    ObjectDetector detector = null;
+    Bitmap bitmap;
+    List <org.tensorflow.lite.task.vision.detector.Detection> result=null;
 
 
     @Override
@@ -82,6 +102,17 @@ public class CameraActivity extends AppCompatActivity {
 //        getSupportActionBar().hide();
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
+        //Detection
+        ObjectDetector.ObjectDetectorOptions options = ObjectDetector.ObjectDetectorOptions.builder()
+                .setMaxResults(1)
+                .setScoreThreshold(0.5f)
+                .build();
+
+        ObjectDetector detector = null;
+        Bitmap bitmap;
+
+
 
         mPreviewView = findViewById(R.id.viewFinder);
         mTakePictureButton = findViewById(R.id.takePictureButton);
@@ -237,8 +268,8 @@ public class CameraActivity extends AppCompatActivity {
                                 runOnUiThread(() -> intent.putExtra("imagePath", mUri.toString()));
 
 
-                                runOnUiThread(() -> Toast.makeText(CameraActivity.this, "Picture saved: " + mPhotoPath,
-                                        Toast.LENGTH_LONG).show());
+//                                runOnUiThread(() -> Toast.makeText(CameraActivity.this, "Picture saved: " + mPhotoPath,
+//                                        Toast.LENGTH_LONG).show());
 
                                 runOnUiThread(() -> startActivity(intent));
                             });
@@ -262,15 +293,67 @@ public class CameraActivity extends AppCompatActivity {
     protected  void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,requestCode,data);
         if(resultCode == RESULT_OK && data!=null){
-            Uri selectImage = data.getData();
+            selectImage = data.getData();
 
-            Intent intent = new Intent(this, ClassificationActivity.class);
-            intent.putExtra("imagePath", selectImage.toString());
-            startActivity(intent);
+
+            dogDetection();
+//            Intent intent = new Intent(this, ClassificationActivity.class);
+//            intent.putExtra("imagePath", selectImage.toString());
+//            startActivity(intent);
 
         }
     }
 
+    //Implementation of Dog Detection before classification of image in Gallery
+    private void dogDetection() {
+        try {
+            detector = ObjectDetector.createFromFileAndOptions(this,"Dog_Detector_metadata.tflite",options);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectImage);
+            result = detector.detect(TensorImage.fromBitmap(bitmap));
+            if(!result.isEmpty()) {
+                Toast.makeText(this, "Dogs Detected", Toast.LENGTH_LONG).show();
+                proceed();
+            }
+            else {
+                Toast.makeText(this, "No Dogs Detected", Toast.LENGTH_LONG).show();
+
+            }
+        } catch (IOException e) {
+            Toast.makeText(this,"No such Image",Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public Bitmap draw(Bitmap bm,List<org.tensorflow.lite.task.vision.detector.Detection> dog){
+        Bitmap b = bm.copy(Bitmap.Config.ARGB_8888,true);
+        Canvas canvas = new Canvas(b);
+        Paint paint = new Paint();
+        paint.setColor(Color.GREEN);
+        paint.setStrokeWidth(5f);
+        paint.setAntiAlias(false);
+        paint.setStyle(Paint.Style.STROKE);
+
+        canvas.drawRoundRect(dog.get(0).getBoundingBox().left,dog.get(0).getBoundingBox().top,dog.get(0).getBoundingBox().right,dog.get(0).getBoundingBox().bottom,15f,15f,paint);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
+        paint.setTextSize(50f);
+
+        String txt = "Dog "+Math.round(dog.get(0).getCategories().get(0).getScore()*100)+"%";
+        canvas.drawText(txt,dog.get(0).getBoundingBox().left,dog.get(0).getBoundingBox().bottom+40,paint);
+        return b;
+    }
+
+    public void proceed(){
+        String str_img;
+        Intent intent = new Intent(this, ClassificationActivity.class);
+        intent.putExtra("imagePath",selectImage.toString());
+        startActivity(intent);
+    }
 
     //switch between front and back camera
     private void switchCamera() {

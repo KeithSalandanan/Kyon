@@ -73,7 +73,7 @@
 
                 <LinearLayout
                     android:background="@drawable/frame_result"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingLeft="35dp"
@@ -84,14 +84,22 @@
 
 
                     <TextView
-                        android:id="@+id/txtResults"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
                         android:textAlignment="center"
-                        android:text="Your dog has a 98% match Maltese"
+                        android:text="Your dog is"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_26ssp"
+                        android:textSize="@dimen/_20ssp" />
+                    <TextView
+                        android:id="@+id/txtResults"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_100sdp"
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:textAlignment="center"
+                        android:text="27.1% Lhasa Apso\n 12.8% Shih-Tzu\n 9.0% Maltese"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_22ssp"
                         android:textStyle="bold" />
 
                     <androidx.appcompat.widget.AppCompatButton
