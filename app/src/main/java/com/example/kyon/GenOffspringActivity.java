@@ -26,6 +26,8 @@ public class GenOffspringActivity extends AppCompatActivity {
     public Uri uriImage1;
     public Uri uriImage2;
 
+    Intent chooseImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,24 +40,19 @@ public class GenOffspringActivity extends AppCompatActivity {
 
 
 
-
+        chooseImage = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
         selectImage1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent,3);
+                startActivityForResult(chooseImage,1);
             }
         });
 
         selectImage2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                startActivityForResult(intent,3);
-                secondImg = true;
+                startActivityForResult(chooseImage,2);
             }
         });
 
@@ -89,17 +86,19 @@ public class GenOffspringActivity extends AppCompatActivity {
     @Override
     protected  void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,requestCode,data);
-        if(resultCode == RESULT_OK && data!=null && firstImg == false){
+        if(resultCode == RESULT_OK && data!= null){
+            if(requestCode == 1 && data!=null){
 
-            uriImage1 = data.getData();
-            selectImage1.setImageURI(uriImage1);
-            firstImg = Boolean.TRUE;
+                uriImage1 = data.getData();
+                selectImage1.setImageURI(uriImage1);
+                firstImg = Boolean.TRUE;
+            }else if(requestCode == 2 && data!=null){
+
+                uriImage2 = data.getData();
+                selectImage2.setImageURI(uriImage2);
+                secondImg = Boolean.TRUE;
+            }
         }
 
-        if(resultCode == RESULT_OK && data!=null &&  secondImg == true){
-
-            uriImage2 = data.getData();
-            selectImage2.setImageURI(uriImage2);
-        }
     }
 }

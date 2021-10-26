@@ -13,12 +13,20 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.YuvImage;
 import android.media.Image;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.ImageProxy;
 
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.support.image.TensorImage;
+import org.tensorflow.lite.support.label.Category;
+import org.tensorflow.lite.task.vision.classifier.Classifications;
+import org.tensorflow.lite.task.vision.classifier.ImageClassifier;
+import org.tensorflow.lite.task.vision.detector.ObjectDetector;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -37,44 +45,30 @@ import java.util.Map;
 
 public class ImageAnalyzerTensorflow extends AppCompatActivity {
 
-    private String assetModelName;
-    private String assetLabelName;
-    private boolean isQuant = true;
+    private String detectionModelName = "Dog_Detector_metadata.tflite";
+    private String assetLabelName = "label.txt";
 
+    private String classifierModelName = "Dog_Detector_metadata.tflite";
+
+    private boolean isQuant = false;
+
+    //options
     private final Interpreter.Options tfLiteOptions = new Interpreter.Options();
-    private Interpreter tfLite;
+
+    //Interpreter
     private List<String> labelList;
     private ByteBuffer imgData = null;
 
-    private int[] intValues;
-
     // Only return this many results.
-    private static final int NUM_DETECTIONS = 10;
-    // outputLocations: array of shape [Batchsize, NUM_DETECTIONS,4]
-    // contains the location of detected boxes
-    private float[][][] outputLocations;
-    // outputClasses: array of shape [Batchsize, NUM_DETECTIONS]
-    // contains the classes of detected boxes
-    private float[][] outputClasses;
-    // outputScores: array of shape [Batchsize, NUM_DETECTIONS]
-    // contains the scores of detected boxes
-    private float[][] outputScores;
-    // numDetections: array of shape [Batchsize]
-    // contains the number of detected boxes
-    private float[] numDetections;
+    private static final int NUM_DETECTIONS = 1;
+
 
     //depends on size model
-    private int DIM_IMG_SIZE = 300;
-    private int DIM_PIXEL_SIZE = 3;
+    private int DIM_IMG_SIZE = 320;
 
-    private float IMAGE_MEAN = 128.0f;
-    private float IMAGE_STD = 128.0f;
+    private float MIN_CONFIDENCE = 0.5f;
 
-    private double MIN_CONFIDENCE = 0.6;
-
-    List<String> detectLabel = new ArrayList<String>();
-    List<Float> detectConfidence = new ArrayList<Float>();
-    List<RectF> detectLocation = new ArrayList<RectF>();
+    private RectF detection = null;
 
     private Context mContext;
 
@@ -83,153 +77,102 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
 
     }
 
-    public List<RectF> getDetectLocation() {return detectLocation;}
-    public List<String> getDetectLabel() {return detectLabel;}
-    public List<Float> getDetectConfidence() {return detectConfidence;}
+    //Detection
+    private final ObjectDetector.ObjectDetectorOptions detectorOptions= ObjectDetector.ObjectDetectorOptions.builder()
+            .setMaxResults(1)
+            .setScoreThreshold(0.5f)
+            .build();
+    ObjectDetector detector = null;
+    List<org.tensorflow.lite.task.vision.detector.Detection> results =null;
+
+    TensorImage tensorIm;
 
 
 
+    //Classification
+    ImageClassifier.ImageClassifierOptions classifierOptions = ImageClassifier.ImageClassifierOptions.builder()
+            .setMaxResults(3)
+            .build();
+    ImageClassifier classifier =  null;
+    List<Classifications> result;
+
+
+
+    //NOT ARRAYS
+    private String detectLabel;
+    private Float detectConfidence;
+    private RectF detectLocation;
+
+    public RectF getDetectLocation() {return detectLocation;}
+    public String getDetectLabel() {return detectLabel;}
+    public Float getDetectConfidence() {return detectConfidence;}
 
     public void analyzeImage(ImageProxy imageProxy) {
 
-        if(imageProxy==null){
-            Log.d("img proxy", "Walang laman awit naman to");
-        }else{
-            Log.d("img proxy", "MERONN");
-        }
-
-        if (isQuant) {
-            assetModelName = "coco_ssd_mobilenet_v1_1.0_quant.tflite";
-            assetLabelName = "coco_ssd_mobilenet_v1_1.0_quant.txt";
-            imgData = ByteBuffer.allocateDirect(DIM_IMG_SIZE * DIM_IMG_SIZE * DIM_PIXEL_SIZE);
-
-        } else {
-            //insert name of float model if you want to use it
-            assetModelName = "Dog_Detector_metadata.tflite";
-            assetLabelName = "Dog_Detector_metadata.txt";
-            imgData = ByteBuffer.allocateDirect(1 * DIM_IMG_SIZE * DIM_IMG_SIZE * DIM_PIXEL_SIZE);
 
 
-        }
-
-
-
-        imgData.order(ByteOrder.nativeOrder());
-
-        intValues = new int[DIM_IMG_SIZE * DIM_IMG_SIZE];
 
         try {
-            tfLite = new Interpreter(loadModelFile(), tfLiteOptions);
+            detector = ObjectDetector.createFromFileAndOptions(mContext, detectionModelName, detectorOptions);
             labelList = loadLabelList();
-            Log.d("TFLITE:", "LOAD LABEL AND TFLITE");
-
-        } catch (Exception ex) {
-            Log.d("TFLITE:", "CANNOT LOAD LABEL AND TFLITE ERROR OCCURED");
-            ex.printStackTrace();
-
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        @SuppressLint("UnsafeExperimentalUsageError")
 
-
-        Bitmap bitmap_orig = toBitmap(imageProxy.getImage());
+        @SuppressLint("UnsafeExperimentalUsageError") Image image = imageProxy.getImage();
+        Bitmap bitmap_orig = toBitmap(image);
         Bitmap bitmap = getResizedBitmap(bitmap_orig, DIM_IMG_SIZE, DIM_IMG_SIZE);
-        convertBitmapToByteBuffer(bitmap);
 
-        Log.d("BITMAP ", "BITMAP PART NA");
-
-        outputLocations = new float[1][NUM_DETECTIONS][4];
-        outputClasses = new float[1][NUM_DETECTIONS];
-        outputScores = new float[1][NUM_DETECTIONS];
-        numDetections = new float[1];
-
-        Log.d("ALLOCATING ARRAY ", "EWAN KO NA");
-        Object[] inputArray = {imgData};
-        Map<Integer, Object> outputMap = new HashMap<>();
-        outputMap.put(0, outputLocations);
-        outputMap.put(1, outputClasses);
-        outputMap.put(2, outputScores);
-        outputMap.put(3, numDetections);
-
+        tensorIm = TensorImage.fromBitmap(bitmap);
+        results = detector.detect(tensorIm);
         // run tfLite
-        Log.d("TFLITE ", "RUNNING..");
-        tfLite.runForMultipleInputsOutputs(inputArray, outputMap);
 
-        Log.d("FUNCTION ENTERING ", "Starting..");
+
+        Log.d("CHECKPOINT", "BITMAP REACHED");
         readOutput();
     }
 
     private void readOutput() {
-        Log.d("ReadOutput Function", "READ OUTPUT NA");
-        int numDetectionsOutput = Math.min(NUM_DETECTIONS, (int) numDetections[0]); // cast from float to integer, use min for safety
+        Log.d("CHECKPOINT", "READ OUTPUT REACHED");
+
+        detection = null;
+        detectLocation = null;
+        detectConfidence = null;
+        detectLabel = null;
+
+        if(results.size()!=0){
+            Log.d("DETECTION", "hasssssssssssssssssssssssssss detection");
+            String dog = labelList.get(0);
 
 
-        final ArrayList<Detection.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
-        for (int i = 0; i < numDetectionsOutput; ++i) {
-            final RectF detection =
+            Float resultScores = results.get(0).getCategories().get(0).getScore();
+            String fScore =  Integer.toString((int)(resultScores*100));
+            Log.d("DETECTION", dog + ": "+ fScore);
+
+
+            final ArrayList<Detection.Recognition> recognitions = new ArrayList<>(1);
+            detection =
                     new RectF(
-                            outputLocations[0][i][1] * DIM_IMG_SIZE,
-                            outputLocations[0][i][0] * DIM_IMG_SIZE,
-                            outputLocations[0][i][3] * DIM_IMG_SIZE,
-                            outputLocations[0][i][2] * DIM_IMG_SIZE);
-            // SSD Mobilenet V1 Model assumes class 0 is background class
-            // in label file and class labels start from 1 to number_of_classes+1,
-            // while outputClasses correspond to class index from 0 to number_of_classes
-            int labelOffset = 1;
-            recognitions.add(
-                    new Detection.Recognition(
-                            "" + i,
-                            labelList.get((int) outputClasses[0][i] + labelOffset),
-                            outputScores[0][i],
-                            detection));
-        }
+                            results.get(0).getBoundingBox().left + DIM_IMG_SIZE,
+                            results.get(0).getBoundingBox().top + DIM_IMG_SIZE,
+                            results.get(0).getBoundingBox().right + DIM_IMG_SIZE,
+                            results.get(0).getBoundingBox().bottom + DIM_IMG_SIZE);
 
+            recognitions.add(new Detection.Recognition("" + 0, dog, resultScores, detection));
 
-
-
-        detectLocation.clear();
-        detectLabel.clear();
-        detectConfidence.clear();
-        for (final Detection.Recognition result : recognitions) {
-            final RectF location = result.getLocation();
-            if (location != null && result.getConfidence() >= MIN_CONFIDENCE) {
-
-                detectLocation.add(result.getLocation());
-                detectLabel.add(result.getTitle());
-                detectConfidence.add(result.getConfidence());
-            }
-        }
-
-        if(recognitions.isEmpty()){
-            Log.d("RECOGNITION", "WALANG NA RECOGNIZE");
-        }else{
-            Log.d("RECOGNITION", "MERONG NA RECOGNIZE");
-        }
-    }
-
-    private void convertBitmapToByteBuffer(Bitmap bitmap) {
-        if (imgData == null) {
-            return;
-        }
-        imgData.rewind();
-        bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0,0,bitmap.getWidth(), bitmap.getHeight());
-        int pixel = 0;
-        for (int i = 0; i < DIM_IMG_SIZE; i++){
-            for (int j = 0; j < DIM_IMG_SIZE; j++){
-                final int val = intValues[pixel++];
-                if (isQuant){
-                    imgData.put((byte) ((val >> 16) & 0xFF));
-                    imgData.put((byte) ((val >> 8) & 0xFF));
-                    imgData.put((byte) (val & 0xFF));
-                } else {
-                    imgData.putFloat((((val >> 16) & 0xFF)-IMAGE_MEAN)/IMAGE_STD);
-                    imgData.putFloat((((val >> 8) & 0xFF)-IMAGE_MEAN)/IMAGE_STD);
-                    imgData.putFloat(((val & 0xFF)-IMAGE_MEAN)/IMAGE_STD);
+            for (final Detection.Recognition result : recognitions) {
+                if (results.get(0).getBoundingBox() != null && result.getConfidence() >= MIN_CONFIDENCE) {
+                    detectLocation = result.getLocation();
+                    detectLabel = result.getTitle();
+                    detectConfidence = result.getConfidence()*100;
+                    Log.d("CHECKPOINT", "DETECTION SUCCESSFUL");
                 }
             }
         }
 
     }
+
 
     private Bitmap getResizedBitmap(Bitmap bitmap_orig, int dim_img_size_x, int dim_img_size_y) {
         int width = bitmap_orig.getWidth();
@@ -253,6 +196,7 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
     }
 
     private static Bitmap toBitmap(Image image) {
+        Log.d("CHECKPOINT", "FUNCTION TO BITMAP");
         Image.Plane[] planes = image.getPlanes();
         ByteBuffer yBuffer = planes[0].getBuffer();
         ByteBuffer uBuffer = planes[1].getBuffer();
@@ -276,24 +220,6 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
-    //load tflite graph from file
-    private MappedByteBuffer loadModelFile() throws IOException {
-
-        AssetFileDescriptor fileDescriptor = mContext.getAssets().openFd(assetModelName);
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredLength = fileDescriptor.getDeclaredLength();
-
-        String s = Long.toString(startOffset);
-        String d = Long.toString(declaredLength);
-
-        Log.d("STARTOFFSET", s);
-        Log.d("DECLAREDLENGTH", d);
-
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
-    }
     private List<String> loadLabelList() throws IOException {
         List<String> labelList = new ArrayList<String>();
         BufferedReader reader =
@@ -304,11 +230,64 @@ public class ImageAnalyzerTensorflow extends AppCompatActivity {
             labelList.add(line);
         }
         reader.close();
-
-
-        if(!labelList.isEmpty()){
-            Log.d("Meron",labelList.get(0));
-        }
         return labelList;
     }
+
+
+        public Boolean detectDog(Uri selectImage) {
+        try {
+            detector = ObjectDetector.createFromFileAndOptions(mContext, detectionModelName, detectorOptions);
+            labelList = loadLabelList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(),selectImage);
+            results = detector.detect(TensorImage.fromBitmap(bitmap));
+
+            if(!results.isEmpty()) {
+                return true;
+            }
+            else {
+
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+        public String classifyDog(Context context, Uri image) {
+        String str;
+        try {
+            classifier = ImageClassifier.createFromFileAndOptions(context,classifierModelName, classifierOptions);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(),image);
+            result = classifier.classify(TensorImage.fromBitmap(bitmap));
+            str = "";
+            for(Classifications c:result){
+                for(Category cat :c.getCategories()) {
+                    str += String.format("%.1f%s %s \n",cat.getScore()*100,"%",cat.getLabel());
+                }
+                return str;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+

@@ -99,7 +99,7 @@
                         android:textAlignment="center"
                         android:text=""
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_22ssp"
+                        android:textSize="@dimen/_18ssp"
                         android:textStyle="bold" />
 
                     <androidx.appcompat.widget.AppCompatButton

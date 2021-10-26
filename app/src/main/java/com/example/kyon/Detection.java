@@ -2,10 +2,8 @@ package com.example.kyon;
 
 import android.graphics.RectF;
 
-/** Generic interface for interacting with different recognition engines. */
-public interface Detection{
+public interface Detection {
 
-    /** An immutable result returned by a Classifier describing what was recognized. */
     public class Recognition {
 
         private final String id;
@@ -15,6 +13,7 @@ public interface Detection{
 
         public Recognition(
                 final String id, final String title, final Float confidence, final RectF location) {
+
             this.id = id;
             this.title = title;
             this.confidence = confidence;
@@ -33,4 +32,5 @@ public interface Detection{
             return new RectF(location);
         }
     }
+
 }

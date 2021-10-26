@@ -41,7 +41,7 @@ public class BoundingBox {
         boundingBoxContainer.setImageBitmap(null);
     }
 
-    public void drawSingleBox(String label, Float confidence, Rect location) {
+    public void drawSingleBox(String label, Float confidence, RectF location) {
 
         Bitmap bitmap = Bitmap.createBitmap(
                 ContainerWidth,
@@ -75,56 +75,4 @@ public class BoundingBox {
         boundingBoxContainer.setImageBitmap(bitmap);
     }
 
-    public void drawMultiBoxes(List<String> label, List<Float> confidence, List<RectF> location, int numberOfDetectedObejcts) {
-
-        Bitmap bitmap = Bitmap.createBitmap(
-                ContainerWidth,
-                ContainerHeight,
-                Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        Paint paintRect = new Paint();
-        paintRect.setStyle(Paint.Style.STROKE);
-        paintRect.setStrokeWidth(10);
-
-        Paint paintText = new Paint();
-        paintText.setStrokeWidth(10);
-        paintText.setTextSize(100f);
-
-        if (location.size()<numberOfDetectedObejcts){ numberOfDetectedObejcts =location.size();}
-
-        for (int i = 0; i < numberOfDetectedObejcts; i++) {
-            switch (i){
-                case 0:
-                    paintRect.setColor(Color.GREEN);
-                    paintText.setColor(Color.GREEN);
-                    break;
-                case 1:
-                    paintRect.setColor(Color.BLUE);
-                    paintText.setColor(Color.BLUE);
-                    break;
-                case 2:
-                    paintRect.setColor(Color.YELLOW);
-                    paintText.setColor(Color.YELLOW);
-                    break;
-                default:
-                    paintRect.setColor(Color.RED);
-                    paintText.setColor(Color.RED);
-            }
-
-            canvas.drawRoundRect(
-                    location.get(i).left * scaleW,
-                    location.get(i).top * scaleH,
-                    location.get(i).right * scaleW,
-                    location.get(i).bottom * scaleH,
-                    50.0f,
-                    50.0f,
-                    paintRect);
-            canvas.drawText( label.get(i) + ": " + Math.round(confidence.get(i)*100) + "%",
-                    location.get(i).left * scaleW,
-                    location.get(i).top * scaleH,
-                    paintText);
-        }
-        boundingBoxContainer.setImageBitmap(bitmap);
-    }
 }

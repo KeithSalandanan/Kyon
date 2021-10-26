@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.util.Size;
 import android.view.OrientationEventListener;
 import android.view.View;
@@ -68,6 +69,7 @@ public class CameraActivity extends AppCompatActivity {
     private ToggleButton mSwitchCameraButton;
     private Button mCloseButton;
     private Button mGalleryButton;
+    private TextView mSignalText;
 
     //variables to store config states
     private String mPhotoPath;
@@ -83,14 +85,7 @@ public class CameraActivity extends AppCompatActivity {
     private int NUMBER_DETECTED_OBJECTS = 1;
 
 
-    ObjectDetector.ObjectDetectorOptions options = ObjectDetector.ObjectDetectorOptions.builder()
-            .setMaxResults(1)
-            .setScoreThreshold(0.5f)
-            .build();
 
-    ObjectDetector detector = null;
-    Bitmap bitmap;
-    List <org.tensorflow.lite.task.vision.detector.Detection> result=null;
 
 
     @Override
@@ -103,14 +98,6 @@ public class CameraActivity extends AppCompatActivity {
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-        //Detection
-        ObjectDetector.ObjectDetectorOptions options = ObjectDetector.ObjectDetectorOptions.builder()
-                .setMaxResults(1)
-                .setScoreThreshold(0.5f)
-                .build();
-
-        ObjectDetector detector = null;
-        Bitmap bitmap;
 
 
 
@@ -121,6 +108,7 @@ public class CameraActivity extends AppCompatActivity {
         mZoomTextView = findViewById(R.id.zoomTextView);
         mCloseButton = findViewById(R.id.btn_close);
         mGalleryButton = findViewById(R.id.openGalleryButton);
+        mSignalText = findViewById(R.id.SignalText);
 
         //initiate zoom level otherwise is not in the foreground -> bug?
         mZoomTextView.setText(mZoomState + "x");
@@ -190,22 +178,38 @@ public class CameraActivity extends AppCompatActivity {
                                 .build();
 
                 ImageAnalyzerTensorflow imageAnalyzerTFLite = new ImageAnalyzerTensorflow(this);
+                Log.d("CHECKPOINT", "IMAGEANALYZER TFLITE REACHED");
                 imageAnalysis.setAnalyzer(Runnable::run, new ImageAnalysis.Analyzer() {
                     @SuppressLint("UnsafeExperimentalUsageError")
                     @Override
                     public void analyze(@NonNull ImageProxy image) {
                         imageAnalyzerTFLite.analyzeImage(image);
+                        Log.d("CHECKPOINT", "ANALYZE CHECKPOINT REACHED");
 
-                        List<RectF> location = imageAnalyzerTFLite.getDetectLocation();
-                        List<String> label = imageAnalyzerTFLite.getDetectLabel();
-                        List<Float> confidence = imageAnalyzerTFLite.getDetectConfidence();
+                        RectF location = imageAnalyzerTFLite.getDetectLocation();
+                        String label = imageAnalyzerTFLite.getDetectLabel();
+                        Float confidence = imageAnalyzerTFLite.getDetectConfidence();
+
+                        Log.d("CHECKPOINT", "CHECKING BOUNDING BOX");
+
 
                         BoundingBox boundingBox = new BoundingBox(CameraActivity.this, CameraActivity.this);
 
-                        if (location.size() != 0) {
-                            boundingBox.drawMultiBoxes(label, confidence, location, NUMBER_DETECTED_OBJECTS);
+                        if (location!=null) {
+                            Log.d("CHECKPOINT", "LOCATION IS NOT EMPTY");
+                            boundingBox.drawSingleBox(label, confidence, location);
+
+                            runOnUiThread(() -> mSignalText.setText("Take a Picture"));
+
+                            runOnUiThread(() ->mTakePictureButton.setBackground(ContextCompat.getDrawable(CameraActivity.this, R.drawable.selector_capture)));
+                            mTakePictureButton.setEnabled(true);
+
                         } else {
+                            Log.d("CHECKPOINT", "LOCATION IS EMPTY");
                             boundingBox.noBoundingBox();
+                            runOnUiThread(() -> mSignalText.setText("No dogs detected"));
+                            runOnUiThread(() ->mTakePictureButton.setBackground(ContextCompat.getDrawable(CameraActivity.this, R.drawable.shape_button_pressed)));
+                            mTakePictureButton.setEnabled(false);
                         }
 
                         //clear stream for next image
@@ -243,44 +247,34 @@ public class CameraActivity extends AppCompatActivity {
 
     //take a photo and save it on media storage --> add android:requestLegacyExternalStorage="true" in manifest
     private void takePhoto() {
-        //Create Folder Dir
-        File mImageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "CameraX");
-        boolean isDirectoryCreated = mImageDir.exists() || mImageDir.mkdirs();
+        // Create file
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/CameraX", System.currentTimeMillis() + ".jpg");
 
-        if (isDirectoryCreated) {
-            // Create file with path
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/CameraX", System.currentTimeMillis() + ".png");
-            ImageCapture.OutputFileOptions.Builder outputFileOptionsBuilder =
-                    new ImageCapture.OutputFileOptions.Builder(file);
+        //File file = new File(System.currentTimeMillis()+".png");
+        ImageCapture.OutputFileOptions.Builder outputFileOptionsBuilder = new ImageCapture.OutputFileOptions.Builder(file);
 
-            Intent intent = new Intent(this, ClassificationActivity.class);
-            mImageCapture.takePicture(outputFileOptionsBuilder.build(), Runnable::run, new ImageCapture.OnImageSavedCallback() {
-                @Override
-                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+        Intent intent = new Intent(this, ClassificationActivity.class);
+        mImageCapture.takePicture(outputFileOptionsBuilder.build(), Runnable::run, new ImageCapture.OnImageSavedCallback() {
+            @Override
+            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
 
-                    //scan for new image an show in gallery icon
-                    MediaScannerConnection.scanFile(CameraActivity.this,
-                            new String[]{file.toString()}, null,
-                            (path, uri) -> {
-                                mPhotoPath = path;
-                                mUri = uri;
+                mUri = Uri.fromFile(file);
+                runOnUiThread(()->Toast.makeText(CameraActivity.this, "Photo Captured", Toast.LENGTH_SHORT).show());
 
-                                runOnUiThread(() -> intent.putExtra("imagePath", mUri.toString()));
+                runOnUiThread(() -> intent.putExtra("imagePath", mUri.toString()));
+
+                runOnUiThread(()-> startActivity(intent));
 
 
-//                                runOnUiThread(() -> Toast.makeText(CameraActivity.this, "Picture saved: " + mPhotoPath,
-//                                        Toast.LENGTH_LONG).show());
+            }
+            @Override
+            public void onError(@NonNull ImageCaptureException exception) {
+                //runOnUiThread(()->Toast.makeText(CameraActivity.this, "Photo Not Captured", Toast.LENGTH_SHORT).show());
+                exception.printStackTrace();
 
-                                runOnUiThread(() -> startActivity(intent));
-                            });
-                }
-                @Override
-                public void onError(@NonNull ImageCaptureException exception) {
-                    exception.printStackTrace();
+            }
+        });
 
-                }
-            });
-        }
     }
 
     //Opens Gallery
@@ -295,65 +289,20 @@ public class CameraActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK && data!=null){
             selectImage = data.getData();
 
-
-            dogDetection();
-//            Intent intent = new Intent(this, ClassificationActivity.class);
-//            intent.putExtra("imagePath", selectImage.toString());
-//            startActivity(intent);
-
-        }
-    }
-
-    //Implementation of Dog Detection before classification of image in Gallery
-    private void dogDetection() {
-        try {
-            detector = ObjectDetector.createFromFileAndOptions(this,"Dog_Detector_metadata.tflite",options);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectImage);
-            result = detector.detect(TensorImage.fromBitmap(bitmap));
-            if(!result.isEmpty()) {
+            ImageAnalyzerTensorflow tfAnalyze = new ImageAnalyzerTensorflow(this);
+            if(tfAnalyze.detectDog(selectImage)){
                 Toast.makeText(this, "Dogs Detected", Toast.LENGTH_LONG).show();
-                proceed();
+                Intent intent = new Intent(this, ClassificationActivity.class);
+                intent.putExtra("imagePath", selectImage.toString());
+                startActivity(intent);
             }
-            else {
+            else{
                 Toast.makeText(this, "No Dogs Detected", Toast.LENGTH_LONG).show();
-
             }
-        } catch (IOException e) {
-            Toast.makeText(this,"No such Image",Toast.LENGTH_LONG).show();
+
         }
-
     }
 
-    public Bitmap draw(Bitmap bm,List<org.tensorflow.lite.task.vision.detector.Detection> dog){
-        Bitmap b = bm.copy(Bitmap.Config.ARGB_8888,true);
-        Canvas canvas = new Canvas(b);
-        Paint paint = new Paint();
-        paint.setColor(Color.GREEN);
-        paint.setStrokeWidth(5f);
-        paint.setAntiAlias(false);
-        paint.setStyle(Paint.Style.STROKE);
-
-        canvas.drawRoundRect(dog.get(0).getBoundingBox().left,dog.get(0).getBoundingBox().top,dog.get(0).getBoundingBox().right,dog.get(0).getBoundingBox().bottom,15f,15f,paint);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setAntiAlias(true);
-        paint.setTextSize(50f);
-
-        String txt = "Dog "+Math.round(dog.get(0).getCategories().get(0).getScore()*100)+"%";
-        canvas.drawText(txt,dog.get(0).getBoundingBox().left,dog.get(0).getBoundingBox().bottom+40,paint);
-        return b;
-    }
-
-    public void proceed(){
-        String str_img;
-        Intent intent = new Intent(this, ClassificationActivity.class);
-        intent.putExtra("imagePath",selectImage.toString());
-        startActivity(intent);
-    }
 
     //switch between front and back camera
     private void switchCamera() {
