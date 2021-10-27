@@ -247,33 +247,41 @@ public class CameraActivity extends AppCompatActivity {
 
     //take a photo and save it on media storage --> add android:requestLegacyExternalStorage="true" in manifest
     private void takePhoto() {
-        // Create file
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/CameraX", System.currentTimeMillis() + ".jpg");
+        //Create Folder Dir
+        File mImageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kyon");
+        boolean isDirectoryCreated = mImageDir.exists() || mImageDir.mkdirs();
 
-        //File file = new File(System.currentTimeMillis()+".png");
-        ImageCapture.OutputFileOptions.Builder outputFileOptionsBuilder = new ImageCapture.OutputFileOptions.Builder(file);
+        if(isDirectoryCreated){
+            // Create file
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Kyon", System.currentTimeMillis() + ".jpg");
 
-        Intent intent = new Intent(this, ClassificationActivity.class);
-        mImageCapture.takePicture(outputFileOptionsBuilder.build(), Runnable::run, new ImageCapture.OnImageSavedCallback() {
-            @Override
-            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+            //File file = new File(System.currentTimeMillis()+".png");
+            ImageCapture.OutputFileOptions.Builder outputFileOptionsBuilder = new ImageCapture.OutputFileOptions.Builder(file);
 
-                mUri = Uri.fromFile(file);
-                runOnUiThread(()->Toast.makeText(CameraActivity.this, "Photo Captured", Toast.LENGTH_SHORT).show());
+            Intent intent = new Intent(this, ClassificationActivity.class);
+            mImageCapture.takePicture(outputFileOptionsBuilder.build(), Runnable::run, new ImageCapture.OnImageSavedCallback() {
+                @Override
+                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
 
-                runOnUiThread(() -> intent.putExtra("imagePath", mUri.toString()));
+                    mUri = Uri.fromFile(file);
+                    runOnUiThread(()->Toast.makeText(CameraActivity.this, "Photo Captured", Toast.LENGTH_SHORT).show());
 
-                runOnUiThread(()-> startActivity(intent));
+                    runOnUiThread(() -> intent.putExtra("imagePath", mUri.toString()));
+
+                    runOnUiThread(()-> startActivity(intent));
 
 
-            }
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                //runOnUiThread(()->Toast.makeText(CameraActivity.this, "Photo Not Captured", Toast.LENGTH_SHORT).show());
-                exception.printStackTrace();
+                }
+                @Override
+                public void onError(@NonNull ImageCaptureException exception) {
+                    //runOnUiThread(()->Toast.makeText(CameraActivity.this, "Photo Not Captured", Toast.LENGTH_SHORT).show());
+                    exception.printStackTrace();
 
-            }
-        });
+                }
+            });
+
+        }
+
 
     }
 
